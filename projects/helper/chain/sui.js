@@ -17,6 +17,10 @@ async function getObject(objectId) {
   }])).content
 }
 
+async function queryEvents(queryObject) {
+  return call('suix_queryEvents', queryObject)
+}
+
 async function getObjects(objectIds) {
   const {
     result
@@ -44,7 +48,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 9999, ite
   sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
   items.push(...(await getObjects(data.filter(idFilter).map(i => i.objectId))))
   if (!hasNextPage) return items
-  return { parent, cursor: nextCursor, items, limit }
+  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter })
 }
 
 async function call(method, params) {
@@ -97,6 +101,7 @@ module.exports = {
   multiCall,
   getObject,
   getObjects,
+  queryEvents,
   getDynamicFieldObject,
   getDynamicFieldObjects,
   dexExport,
